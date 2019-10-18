@@ -1,0 +1,43 @@
+package vertex
+
+import (
+	"math"
+    "fmt"
+)
+
+type Vertex struct {
+	X, Y float64
+}
+
+float64 Vertex::Abs() {
+	return math.Sqrt( this.X*this.X + this.Y*this.Y );
+}
+
+void Vertex::Scale(f float64) {
+	this.X = this.X * f
+	this.Y = this.Y * f
+}
+
+float64 Vertex::EightAbs(){
+
+  // Named function
+  float64 ::two(){
+    return 2;
+  }
+  
+  // Assigned closure
+  four := float64 ::(){
+    return 4;
+  }
+  
+  // Anonymous closure
+  return float64 ::(){
+    return this.Abs() * two() * four();
+  }();
+  
+}
+
+// Default void return type
+Vertex::Hello(){
+    fmt.Println("Hello from vertex:", this);
+}
