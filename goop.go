@@ -24,13 +24,13 @@ func main() {
   } else {
     input = os.Args[1];
   }
-  fmt.Println("\n[ENGINE] Searching directory: " + input);
+  fmt.Println("[ENGINE] Searching directory: " + input);
 
   // Work
   pathWalker(input);
 
   // Wave
-  fmt.Println("\n[ENGINE] Finished...");
+  fmt.Println("[ENGINE] Finished...\n");
 }
 
 func pathWalker(path string){
@@ -53,7 +53,7 @@ func pathWalker(path string){
     return nil;
   });
   if err != nil { panic(err) }
-  fmt.Println("Engine found " + itoa(len(parsedFiles)) + " goo file(s)...")
+  fmt.Println("[ENGINE] Found " + itoa(len(parsedFiles)) + " goo file(s)...")
 
   // Create a channel, fill it, and then drain with workers
   channel := make(chan bool);
@@ -76,14 +76,14 @@ func walkWorker(path string, channel chan bool){
   fileString, err := file.ReadFile(path);
   if err != nil { panic(err) }
   lines := str.Split(string(fileString), "\n");
-  fmt.Println("\n[ASYNC] Dispatcher - Scanning " + itoa(len(lines)) + " lines in: " + path);
+  fmt.Println("[ASYNC] Dispatcher - Scanning " + itoa(len(lines)) + " lines in: " + path);
 
   // Scan all lines in the file
   // NOTE - This scan method mandates single-line goop function definitions
   // IE, ALLOWED -
   // Vertex::MultMultX( firstMult integer, secndMult integer, thirdMult integer ) {
   //    return this.X *
-  //            firstMult * 
+  //            firstMult *
   //            secndMult *
   //            thirdMult;
   //  }

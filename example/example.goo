@@ -4,10 +4,10 @@ import (
   vtx "vertex"
   "fmt"
 )
-
-func main(){
+::main(){
   v := vtx.Vertex{3, 4};
   fmt.Println(v.Abs());
-  fmt.Println(v.EightAbs());
-  v.Hello();
+  ::(){
+    fmt.Println(v.EightAbs());
+  }();
 }

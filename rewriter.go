@@ -107,43 +107,35 @@ func Rewriter (data string) string {
     tokens[cToken] = splitToken[1];
 
     // Empty and rebuild method def
-    methodDef = []string{};
+    methodDef = []string{
+        "func",
+    };
+
     if(len(className) > 0){
       // Format for object pointer/receiver
       methodDef = append(methodDef, []string{
-        "func",
-        "(",
+        " (",
         "this",
-        "*" + className,
+        " *" + className,
         ")",
-        methodName +
-        "(" + str.Join(parameters, " ") + ")",
-      }...)
-    } else {
-      // Format for closure
-      if(len(methodName) > 0){
-        // Build named closure
-        methodDef = []string{
-          methodName,
-          ":=",
-        }
-      } // else - ANONYMOUS CLOSURE
-
-      methodDef = append(methodDef, []string{
-        "func",
-        "(" + str.Join(parameters, " ") + ")",
       }...)
     }
-
+    if(len(methodName) > 0){
+      methodDef = append(methodDef, " " + methodName);
+    } else {
+      // Anonymous closure
+    }
+    methodDef = append(methodDef, "(" + str.Join(parameters, " ") + ")")
     // Add return type if not void
-    if(returnType != "void") { methodDef = append(methodDef, returnType); }
+    if(returnType != "void") { methodDef = append(methodDef, " " + returnType + " "); }
     // If we stored a shard in the current slot, add it to the new line
     methodDef = append(methodDef, tokens[cToken])
     // Write the new method definition to the previous slot and mark valid
-    tokens[ cToken ] = str.Join(methodDef, " ");
+    tokens[ cToken ] = str.Join(methodDef, "");
     tokenSet[ cToken ] = true;
 
     // Notify function was rewriten
+    if(len(methodName) == 0){ methodName = "<ANONYMOUS>"; }
     fmt.Println("[SYNC] Worker - Method Rewrite: " + methodName);
   }
 
