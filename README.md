@@ -44,12 +44,13 @@ Double := int ::(val int){ return 2 * val; }
 // GOLANG
 func (){ fmt.Println("Hello World!"); }();
 func (val int) int { return 2 * val; }();
+
 // GOOP
 ::(){ fmt.Println("Hello World!"); }();
 int ::(val int){ return 2 * val; }();
 ```
 #### Member Functions
-Goop can cut down on boilerplate for standard functions, but the real power is when writing member functions. Class member pointers are automatically injected as `this` and function bodies can then be written as if in C++. Golang code from [here](https://tour.golang.org/methods/4).
+Goop can cut down on boilerplate for standard functions, but the real power is when writing member functions. Class member pointers are automatically injected as `this` and function bodies can then be written as if in C++.
 
 **Member Function**
 ```
