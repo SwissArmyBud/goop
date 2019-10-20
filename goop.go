@@ -7,6 +7,7 @@ import (
   "path/filepath"
   file "io/ioutil"
   strUtil "strconv"
+  "rewriters"
 )
 
 var itoa = strUtil.Itoa
@@ -80,22 +81,17 @@ func walkWorker(path string, channel chan bool){
 
   // Scan all lines in the file
   // NOTE - This scan method mandates single-line goop function definitions
-  // IE, ALLOWED -
-  // Vertex::MultMultX( firstMult integer, secndMult integer, thirdMult integer ) {
-  //    return this.X *
-  //            firstMult *
-  //            secndMult *
-  //            thirdMult;
-  //  }
-  // IE, NOT ALLOWED -
-  // Vertex::MultMultX( firstMult integer,
-  //                   secndMult integer,
-  //                   thirdMult integer ) {
-  //    return this.X * firstMult * secndMult * thirdMult;
-  //  }
   // TODO - Implement a marking system for lines, since line scanning is sync inside worker
+  rewriteFunctions := [](func(string)string){
+    rewriters.MethodRewriter,
+    rewriters.WhileLoopRewriter,
+    rewriters.ForLoopRewriter,
+    rewriters.ChannelTokenRewriter,
+  };
   for i:=0;i<len(lines);i++{
-    lines[i] = Rewriter(lines[i]);
+    for _, rewriter := range(rewriteFunctions) {
+      lines[i] = rewriter(lines[i]);
+    }
   }
 
   // Write back to file with new extension

@@ -3,11 +3,45 @@ package main
 import (
   vtx "vertex"
   "fmt"
+  "time"
 )
 ::main(){
+  // Init a Vertex object, and call class methods on it
   v := vtx.Vertex{3, 4};
   fmt.Println(v.Abs());
+  // Use an anonymous closure to perform some work
   ::(){
     fmt.Println(v.EightAbs());
   }();
+
+  // Create a channel, fill it, and then drain with workers
+  channel := make(chan bool);
+  count := 20;
+  channelOpen := false;
+
+  // Dispatchable worker
+  worker := ::(channel chan bool){
+    while(!channelOpen){
+      time.Sleep(10);
+    }
+    fmt.Print(".");
+    channel << true;
+  }
+
+  // Fill channel to begin processing
+  fmt.Println("Starting to dispatch channel workers...");
+  for (i:=0; i<count; i++) {
+    // Spin off concurrent tasks
+    go worker(channel);
+  }
+
+  fmt.Print("Finished dispatching channel workers");
+  channelOpen = true;
+  
+  // Drain channel to ensure concurrent processing is finished
+  for ( i:=0; i<count; i++ ) {
+    <<channel;
+  }
+  fmt.Println("\nChannel work finished!");
+
 }

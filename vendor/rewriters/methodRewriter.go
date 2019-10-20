@@ -1,4 +1,4 @@
-package main
+package rewriters
 
 import (
   str "strings"
@@ -6,7 +6,7 @@ import (
   "fmt"
 )
 
-func Rewriter (data string) string {
+func MethodRewriter (data string) string {
 
   // Pattern match for golang return type capturing:
   // (optional) map
@@ -24,8 +24,8 @@ func Rewriter (data string) string {
   // oktype{[]float64
   // oktype}[]float64
   // oktype};[]float64
-  rtRegex := regexp.MustCompile(`((map\[.*?\])?(\[.*?\])?[A-Za-z][A-Za-z0-9]*)+$`);
-
+  // oktype) func(int, int) map[]func(int, int)void
+  rtRegex := regexp.MustCompile(`((((map)?(\[.*?\]))?|(func\(.*?\))?\s?)?([A-Za-z][A-Za-z0-9]*)\ *)$`);
 
   // Pattern match for any number of whitespaces and a function opening
   foRegex := regexp.MustCompile(`(\s*)\{`);
@@ -45,8 +45,9 @@ func Rewriter (data string) string {
     var returnType, className, methodName string;
     var methodDef []string;
 
-    // Method definition token
+    // Method definition token, gather and invalidate
     token := tokens[cToken];
+    tokenSet[ cToken ] = false;
     // Class name
     className = str.Split(token, "::")[0];
     // Method name
@@ -57,23 +58,21 @@ func Rewriter (data string) string {
     // Return type is in previous token, if it exists
     if(cToken > 0){
       pIdx := cToken - 1;
-      // Look for return type match in token
-      idx := rtRegex.FindIndex([]byte(tokens[ pIdx ]));
+      // Gather previous line tokens and look for return type match
+      linePrefix := str.Join(tokens[:cToken], " ");
+      mIdx := rtRegex.FindStringIndex(linePrefix);
       // If match exists, extract it and handle remaining token bits
-      if (idx != nil) {
-        if idx[0] > 0 {
-          // If a match starts past zero, save the shard in the previous token
-          returnType = tokens[ pIdx ][ idx[0] : ]
-          tokens[ pIdx ] = tokens[ pIdx ][ : idx[0] ]
-        } else {
-          // Otherwise keep the value and invalidate the previous token
-          returnType = tokens[ pIdx ];
-          tokenSet[ pIdx ] = false;
+      if mIdx != nil{
+        // If a match starts past zero, save the shard in the previous token
+        returnType = str.TrimSpace(linePrefix[ mIdx[0] : ]);
+        tokens[ pIdx ] = linePrefix[ : mIdx[0] ];
+        tokenSet[ pIdx ] = true;
+        // Invalidate all the gathered tokens
+        for i:= 0; i < pIdx; i++ {
+          tokenSet[i] = false;
         }
       } // else - No regex match, return type stays default at "void"
     }
-    // First token, no return type, but token is now invalid
-    tokenSet[ cToken ] = false;
 
     // Start at cToken and go looking for end of param defs
     var parameters []string;
