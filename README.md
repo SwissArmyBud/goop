@@ -17,11 +17,11 @@ Golang has made several unfortunate syntax choices, none of which contribute to 
  - Changes the channel token from `<-` to `<<`, a pre-existing C++ token for feeding pipes.
 
 ## Overview
-Goop doesn't change anything about the existing build process, and attempts to interfere as little as possible with the language's ecosystem. The engine looks for files recursively - so it simply needs to be pointed at the root of a project or called from inside the root folder. Working from dedicated `.goo` files, the engine rewrites function definitions and then outputs a standard golang `.go` file, which can be imported/built/run etc as usual. Goop will also re-token channel operations and unwrap `for` loops during transpilation.
+Goop doesn't change anything about the existing build process, and attempts to interfere as little as possible with the language's ecosystem. The engine looks for files recursively - so it simply needs to be pointed at the root of a project or called from inside the root folder. Working from dedicated `.goo` files, the engine rewrites function definitions and then outputs a standard golang `.go` file, which can be imported/built/run etc as usual.
 
 ## Style
 #### While-Loop Conversion and Unwrapping
-Golang allows `if` statements to have their test condition be wrapped or unwrapped, but forces `for` loops to be unwrapped. Goop will unwrap any `for` loop parameterization in place without complaint. Because Goop will also unwrap `for` loops, `while` loops can be wrapped in Goop syntax.
+Golang forces programmers to use single-condition `for` loops to duplicate `while` loop behaviors that have been standardized for over 30 years. Goop allows for `while` loops and because Goop will also unwrap `for` loops, `while` loops can be wrapped in Goop syntax.
 ```
 // GOLANG LEGAL
 let i := 0;
