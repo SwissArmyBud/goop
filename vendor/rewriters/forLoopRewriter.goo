@@ -5,7 +5,7 @@ import (
   "fmt"
 )
 
-func ForLoopRewriter(data string) string{
+string ::ForLoopRewriter(data string){
 
   // Pattern match for golang for loop
   // (mandatory) for(

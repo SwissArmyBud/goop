@@ -4,15 +4,56 @@ import (
   vtx "vertex"
   "fmt"
   "time"
+  strUtil "strconv"
 )
+
+var itoa = strUtil.Itoa
+var atoi = strUtil.Atoi
+
 ::main(){
-  // Init a Vertex object, and call class methods on it
+  fmt.Println();
+
+  // -------------------------
+  // SECTION - Member Functions
+  // -------------------------
+  fmt.Println();
+  fmt.Println("[SECTION] - Member functions and closures:");
+
+  // Init a Vertex class object, and call methods on it
   v := vtx.Vertex{3, 4};
-  fmt.Println(v.Abs());
+  fmt.Println("Vertex Object: ", v);
+  fmt.Printf("Vertex member function Abs(): %.0f\n", v.Abs());
   // Use an anonymous closure to perform some work
   ::(){
-    fmt.Println(v.EightAbs());
+    fmt.Printf("Vertex member function EightAbs(): %.0f\n", v.EightAbs());
   }();
+
+  // -------------------------
+  // SECTION - Loop Manipulation
+  // -------------------------
+  fmt.Println();
+  fmt.Println("[SECTION] - Manipulating loops:");
+
+  fmt.Println("Going forwards...");
+  loops := 6;
+  for ( i:=1; i<=loops; i++ ) {
+    loops -= i;
+    fmt.Printf("Values - [i, loops] = [%d, %d]\n", i, loops);
+  }
+
+  fmt.Println("Going backwards...");
+  i := 0;
+  while (loops < 6){
+    i++;
+    loops += i;
+    fmt.Printf("Values - [i, loops] = [%d, %d]\n", i, loops);
+  }
+
+  // -------------------------
+  // SECTION - Channel Ops
+  // -------------------------
+  fmt.Println();
+  fmt.Println("[SECTION] - Running channel operations:");
 
   // Create a channel, fill it, and then drain with workers
   channel := make(chan bool);
@@ -27,7 +68,6 @@ import (
     fmt.Print(".");
     channel << true;
   }
-
   // Fill channel to begin processing
   fmt.Println("Starting to dispatch channel workers...");
   for (i:=0; i<count; i++) {
@@ -37,11 +77,59 @@ import (
 
   fmt.Print("Finished dispatching channel workers");
   channelOpen = true;
-  
+
   // Drain channel to ensure concurrent processing is finished
   for ( i:=0; i<count; i++ ) {
     <<channel;
   }
-  fmt.Println("\nChannel work finished!");
+  fmt.Println();
+  fmt.Println("Channel ops finished!");
 
+  // -------------------------
+  // SECTION - Engine Commands
+  // -------------------------
+  fmt.Println();
+  fmt.Println("[SECTION] - Running engine commands...");
+
+  itoaVal := string ::(val int){
+    return itoa(val);
+  };
+  four := int ::(){ return 4; }
+
+  value := four();
+  fmt.Println("Value reset to default: " + itoa(value));
+  // [GOOP][SKIP][2]
+  value = value << 1;
+  value = value << 2;
+  fmt.Println("Value after triple shift: " + itoaVal(value));
+  // [GOOP][STOP]
+  value = value << 1;
+  value = value << 2;
+  // [GOOP][START]
+  fmt.Println("Value after triple shift: " + itoaVal(value));
+  value = four();
+  fmt.Println("Value reset to default: " + itoa(value));
+  // [GOOP][DELETE][2]
+  value = value << 1;
+  value = value << 2;
+  fmt.Println("Value after deleted shifts: " + itoaVal(value));
+  // [GOOP][DELETE][START]
+  value = value << 1;
+  value = value << 2;
+  // [GOOP][DELETE][STOP]
+  fmt.Println("Value after deleted shifts: " + itoaVal(value));
+  // [GOOP][SKIP][2]
+  value = value << 1;
+  value = value << 2;
+  fmt.Println("Value after triple shift: " + itoaVal(value));
+  // [GOOP][COMMENT][2]
+  value = value << 1;
+  value = value << 2;
+  // [GOOP][COMMENT][START]
+  value = value << 3;
+  value = value << 4;
+  value = "ASSIGNING STRING TO INT IS ILLEGAL!!!"
+  // [GOOP][COMMENT][STOP]
+  fmt.Println("Value after commented shifts: " + itoaVal(value));
+  fmt.Println();
 }

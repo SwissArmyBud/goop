@@ -16,10 +16,10 @@ import (
 var itoa = strUtil.Itoa
 var atoi = strUtil.Atoi
 var areEqual = reflect.DeepEqual
-func regexReplaceCleanSplit(re *regexp.Regexp, in string, pt string) []string{
+[]string ::regexReplaceCleanSplit(re *regexp.Regexp, in string, pt string){
   return str.Split(str.TrimSpace(re.ReplaceAllString(in, pt)), " ");
 }
-func Panic(er error) {
+::Panic(er error) {
   if( er != nil ) { panic(er); }
 }
 
@@ -27,7 +27,7 @@ func Panic(er error) {
 var KEEP_ENGINE_CMD_IN_OUTPUT bool = false;
 var PRINT_ENGINE_DEBUG_MSGS bool = true;
 
-func main() {
+::main() {
   // Greet
   fmt.Println("\n[ENGINE] Starting...");
 
@@ -49,13 +49,13 @@ func main() {
   fmt.Println("[ENGINE] Finished...\n");
 }
 
-func pathWalker(path string) {
+::pathWalker(path string) {
 
   // Setup an array for all the files that need processing
   var parsedFiles []string;
 
   // Walk the filepath and gather files
-  err := filepath.Walk(path, func(fname string, finfo os.FileInfo, err error) error  {
+  err := filepath.Walk(path, error ::(fname string, finfo os.FileInfo, err error) {
     // Error out on error (capture??)
     Panic(err);
     // Gather files with matching extensions
@@ -74,13 +74,13 @@ func pathWalker(path string) {
 
   // Fill channel to begin processing
   fmt.Println("[ENGINE] Dispatching " + itoa(len(parsedFiles)) + " rewrite workers...");
-  for i:=0; i < len(parsedFiles); i++ {
+  for (i:=0; i < len(parsedFiles); i++) {
     // Spin off concurrent tasks
     go walkWorker(parsedFiles[i], channel);
   }
   // Drain channel to ensure concurrent processing is finished
-  for i:=0; i < len(parsedFiles); i++ {
-    tLines += <-channel;
+  for (i:=0; i < len(parsedFiles); i++) {
+    tLines += <<channel;
   }
 
   // Report reports
@@ -89,7 +89,7 @@ func pathWalker(path string) {
 }
 
 // ASYNC WORKER
-func walkWorker(path string, channel chan int){
+::walkWorker(path string, channel chan int){
 
   // Get text from file path
   fileString, err := file.ReadFile(path);
@@ -115,7 +115,7 @@ func walkWorker(path string, channel chan int){
   var lineSet = make(map[int]bool);
 
   // Scan all lines in the file
-  for i:=0; i < len(lines); i++ {
+  for (i:=0; i < len(lines); i++) {
 
     // Default include line in output
     lineSet[i] = true;
@@ -148,7 +148,7 @@ func walkWorker(path string, channel chan int){
           Panic(err);
           fmt.Printf("[SYNC] Worker - Ignoring " + itoa(count) + " lines at %d...\n", i);
           // For each skip, include line in output and move to next line
-          for l := 0; l < count; l++ {
+          for (l := 0; l < count; l++) {
             lineSet[i] = true;
             i++;
           }
@@ -161,7 +161,7 @@ func walkWorker(path string, channel chan int){
             if( command[1] == "START" ){
               deleting := true;
               fmt.Printf("[SYNC] Worker - Deleting from line %d...\n", i);
-              for deleting {
+              while( deleting ){
                 // While we are deleting lines, keep checking for STOP token
                 if( ecRegex.MatchString(lines[i]) ){
                   cmd := regexReplaceCleanSplit(ecRegex, lines[i], "$1 $3");
@@ -180,7 +180,7 @@ func walkWorker(path string, channel chan int){
           } else {
             // If an int is provided, pass that many lines without validating
             fmt.Printf("[SYNC] Worker - Deleting " + itoa(count) + " lines at %d...\n", i);
-            for l := 0; l < count; l++ {
+            for (l := 0; l < count; l++) {
               // Delete is automatic when no 'lineSet' token is generated
               // Point to next line
               i++;
@@ -194,7 +194,7 @@ func walkWorker(path string, channel chan int){
           if( err != nil ){
             if( command[1] == "START" ){
               commenting := true;
-              for commenting {
+              while( commenting ){
                 // While we are deleting lines, keep checking for STOP token
                 if( ecRegex.MatchString(lines[i]) ){
                   cmd := regexReplaceCleanSplit(ecRegex, lines[i], "$1 $3");
@@ -215,7 +215,7 @@ func walkWorker(path string, channel chan int){
             }
           } else {
             fmt.Printf("[SYNC] Worker - Commenting " + itoa(count) + " lines at %d...\n", i);
-            for l := 0; l < count; l++ {
+            for (l := 0; l < count; l++) {
               // Commenting requires rewriting the line and marking valid
               lineSet[i] = true;
               lines[i] = wsRegex.ReplaceAllString(lines[i], "$1// $2");
@@ -232,7 +232,7 @@ func walkWorker(path string, channel chan int){
       continue;
     }
     if ( processing ) {
-      for _, rewriter := range(rewriteFunctions) {
+      for ( _, rewriter := range(rewriteFunctions) ) {
         lines[i] = rewriter(lines[i]);
       }
     }
@@ -240,7 +240,7 @@ func walkWorker(path string, channel chan int){
 
   // Count and condense valid lines
   vTokens := 0;
-  for i := 0; i < len(lines); i++ {
+  for (i := 0; i < len(lines); i++) {
     if ( lineSet[i] ) {
       lines[vTokens] = lines[i];
       vTokens++;
@@ -254,6 +254,6 @@ func walkWorker(path string, channel chan int){
   Panic(err);
 
   // Tick channel to signify completion
-  channel <- len(lines);
+  channel << len(lines);
 
 }

@@ -5,9 +5,12 @@ import (
   "fmt"
 )
 
+// [GOOP][DELETE][1]
+// This block allows Goop to process itself
+// [GOOP][SKIP][1]
 var channelToken string = "<<";
 
-func ChannelTokenRewriter(data string) string{
+string ::ChannelTokenRewriter(data string){
 
   // Pattern match for channel token
   // (mandatory) <-

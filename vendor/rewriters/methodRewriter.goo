@@ -6,9 +6,12 @@ import (
   "fmt"
 )
 
+// [GOOP][DELETE][1]
+// This block allows Goop to process itself
+// [GOOP][SKIP][1]
 var methodToken string = "::";
 
-func MethodRewriter(data string) string{
+string ::MethodRewriter(data string){
 
   // Pattern match for golang return type capturing:
   // (optional) map
@@ -39,7 +42,7 @@ func MethodRewriter(data string) string{
   var tokenSet = make(map[int]bool);
 
   // Main definition for rewriting - rewrites nodes as needed
-  tokenRewriter := func(){
+  tokenRewriter := ::(){
 
     // Setup the needed container variables for transpiling definitions
     var returnType, className, methodName string;
@@ -68,7 +71,7 @@ func MethodRewriter(data string) string{
         tokens[ pIdx ] = linePrefix[:mIdx[0]];
         tokenSet[ pIdx ] = len(tokens[pIdx]) > 0;
         // Invalidate all the gathered tokens
-        for i := 0; i < pIdx; i++ {
+        for (i := 0; i < pIdx; i++) {
           tokenSet[i] = false;
         }
       } // else - No regex match, return type stays default at "void"
@@ -81,7 +84,7 @@ func MethodRewriter(data string) string{
       // Grab parameter section of token and push
       parameters = append(parameters, str.Split(token, "(")[1]);
       // Keep pushing tokens until parameters finished
-      for idx := cToken + 1; idx < len(tokens); idx++ {
+      for (idx := cToken + 1; idx < len(tokens); idx++) {
         // Check for end of parameters
         if( !str.Contains(tokens[idx], ")") ){
           // Gather value and invalidate token
@@ -142,7 +145,7 @@ func MethodRewriter(data string) string{
   }
 
   // Check all tokens for method def signal
-  for cToken = 0; cToken < len(tokens); cToken++ {
+  for (cToken = 0; cToken < len(tokens); cToken++) {
     tokenSet[cToken] = true;
     if( str.Contains(tokens[cToken],methodToken) ){
       // Process token on signal
@@ -151,7 +154,7 @@ func MethodRewriter(data string) string{
   }
   // Count and condense valid tokens
   vTokens := 0;
-  for cToken = 0; cToken < len(tokens); cToken++ {
+  for (cToken = 0; cToken < len(tokens); cToken++) {
     if tokenSet[cToken] {
       tokens[vTokens] = tokens[cToken];
       vTokens++;
