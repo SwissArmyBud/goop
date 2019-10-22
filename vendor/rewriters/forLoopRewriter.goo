@@ -2,10 +2,10 @@ package rewriters
 
 import (
   "regexp"
-  "fmt"
+  "logger"
 )
 
-string ::ForLoopRewriter(data string){
+string ::ForLoopRewriter(data string, log logger.LevelLogger){
 
   // Pattern match for golang for loop
   // (mandatory) for(
@@ -19,7 +19,7 @@ string ::ForLoopRewriter(data string){
   // If a "for" loop is matched, unwrap and pad one space on left/right
   if( flRegex.MatchString(data) ){
     matches := flRegex.FindAllStringIndex(data, -1);
-    fmt.Printf("[SYNC] Rewriter - Unwrapping %d for loop(s)...\n", len(matches));
+    log.Logf(5, "[SYNC] Rewriter - Unwrapping %d for loop(s)...\n", len(matches));
     // Use regex to unwrap the parameter capture groups
     data = flRegex.ReplaceAllString(data, "for $1 {");;
   }

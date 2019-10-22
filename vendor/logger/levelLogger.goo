@@ -1,0 +1,27 @@
+package logger
+
+import (
+  "fmt"
+)
+
+type LevelLogger struct {
+  Level int;
+}
+
+int LevelLogger::GetLevel(){ return this.Level; }
+void LevelLogger::SetLevel( l int ){ this.Level = l; }
+void LevelLogger::Log( l int, args ...interface{}){
+  if( l <= this.Level ){
+    fmt.Print(args...);
+  }
+}
+void LevelLogger::Logln( l int, args ...interface{}){
+  if( l <= this.Level ){
+    fmt.Println(args...);
+  }
+}
+void LevelLogger::Logf( l int, s string, args ...interface{}){
+  if( l <= this.Level ){
+    fmt.Printf(s, args...);
+  }
+}

@@ -3,7 +3,7 @@ package rewriters
 import (
   str "strings"
   "regexp"
-  "fmt"
+  "logger"
 )
 
 // [GOOP][DELETE][1]
@@ -11,7 +11,7 @@ import (
 // [GOOP][SKIP][1]
 var methodToken string = "::";
 
-string ::MethodRewriter(data string){
+string ::MethodRewriter(data string, log logger.LevelLogger){
 
   // Pattern match for golang return type capturing:
   // (optional) map
@@ -141,7 +141,7 @@ string ::MethodRewriter(data string){
 
     // Notify function was rewriten
     if( len(methodName) == 0 ){ methodName = "<ANONYMOUS>"; }
-    fmt.Println("[SYNC] Rewriter - Method Rewrite: " + methodName);
+    log.Logln(5, "[SYNC] Rewriter - Method Rewrite: " + methodName);
   }
 
   // Check all tokens for method def signal

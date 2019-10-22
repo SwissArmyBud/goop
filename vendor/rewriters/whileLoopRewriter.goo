@@ -2,10 +2,10 @@ package rewriters
 
 import (
   "regexp"
-  "fmt"
+  "logger"
 )
 
-string ::WhileLoopRewriter(data string){
+string ::WhileLoopRewriter(data string, log logger.LevelLogger){
 
   // Pattern match for golang while loop
   // (mandatory) while
@@ -13,7 +13,7 @@ string ::WhileLoopRewriter(data string){
 
   if( flRegex.MatchString(data) ){
     matches := flRegex.FindAllStringIndex(data, -1);
-    fmt.Printf("[SYNC] Rewriter - Converting %d while loop(s)...\n", len(matches));
+    log.Logf(5, "[SYNC] Rewriter - Converting %d while loop(s)...\n", len(matches));
     // Use regex to unwrap the parameter capture groups
     data = flRegex.ReplaceAllString(data, "for")
   }

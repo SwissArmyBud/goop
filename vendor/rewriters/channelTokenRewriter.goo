@@ -2,7 +2,7 @@ package rewriters
 
 import (
   "regexp"
-  "fmt"
+  "logger"
 )
 
 // [GOOP][DELETE][1]
@@ -10,7 +10,7 @@ import (
 // [GOOP][SKIP][1]
 var channelToken string = "<<";
 
-string ::ChannelTokenRewriter(data string){
+string ::ChannelTokenRewriter(data string, log logger.LevelLogger){
 
   // Pattern match for channel token
   // (mandatory) <-
@@ -19,7 +19,7 @@ string ::ChannelTokenRewriter(data string){
   if ( ctRegex.MatchString(data) ){
     // Use regex to replace channel token
     data = ctRegex.ReplaceAllString(data, "<-");
-    fmt.Println("[SYNC] Rewriter - Channel Token Update");
+    log.Logln(5, "[SYNC] Rewriter - Channel Token Update");
   }
 
   // Return string to caller

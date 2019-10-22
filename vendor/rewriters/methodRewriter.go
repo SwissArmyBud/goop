@@ -3,12 +3,12 @@ package rewriters
 import (
   str "strings"
   "regexp"
-  "fmt"
+  "logger"
 )
 
 var methodToken string = "::";
 
-func MethodRewriter(data string) string{
+func MethodRewriter(data string, log logger.LevelLogger) string{
 
   // Pattern match for golang return type capturing:
   // (optional) map
@@ -138,7 +138,7 @@ func MethodRewriter(data string) string{
 
     // Notify function was rewriten
     if( len(methodName) == 0 ){ methodName = "<ANONYMOUS>"; }
-    fmt.Println("[SYNC] Rewriter - Method Rewrite: " + methodName);
+    log.Logln(5, "[SYNC] Rewriter - Method Rewrite: " + methodName);
   }
 
   // Check all tokens for method def signal

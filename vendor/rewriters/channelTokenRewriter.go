@@ -2,12 +2,12 @@ package rewriters
 
 import (
   "regexp"
-  "fmt"
+  "logger"
 )
 
 var channelToken string = "<<";
 
-func ChannelTokenRewriter(data string) string{
+func ChannelTokenRewriter(data string, log logger.LevelLogger) string{
 
   // Pattern match for channel token
   // (mandatory) <-
@@ -16,7 +16,7 @@ func ChannelTokenRewriter(data string) string{
   if ( ctRegex.MatchString(data) ){
     // Use regex to replace channel token
     data = ctRegex.ReplaceAllString(data, "<-");
-    fmt.Println("[SYNC] Rewriter - Channel Token Update");
+    log.Logln(5, "[SYNC] Rewriter - Channel Token Update");
   }
 
   // Return string to caller

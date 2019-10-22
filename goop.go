@@ -1,7 +1,6 @@
 package main
 
 import (
-  "fmt"
   str "strings"
   "os"
   "path/filepath"
@@ -10,7 +9,12 @@ import (
   "rewriters"
   "regexp"
   "reflect"
+  "logger"
 )
+
+// Configuration options
+var KEEP_ENGINE_CMD_IN_OUTPUT bool = false;
+var MAX_LOGGING_LEVEL int = 5;
 
 // Condensed function pointers
 var itoa = strUtil.Itoa
@@ -22,14 +26,12 @@ func regexReplaceCleanSplit(re *regexp.Regexp, in string, pt string) []string{
 func Panic(er error) {
   if( er != nil ) { panic(er); }
 }
+var log = logger.LevelLogger{ MAX_LOGGING_LEVEL };
 
-// Configuration options
-var KEEP_ENGINE_CMD_IN_OUTPUT bool = false;
-var PRINT_ENGINE_DEBUG_MSGS bool = true;
 
 func main() {
   // Greet
-  fmt.Println("\n[ENGINE] Starting...");
+  log.Logln(1, "\n[ENGINE] Starting...");
 
   // Get
   var input string;
@@ -40,13 +42,13 @@ func main() {
   } else {
     input = os.Args[1];
   }
-  fmt.Println("[ENGINE] Searching directory: " + input);
+  log.Logln(1, "[ENGINE] Searching directory: " + input);
 
   // Work
   pathWalker(input);
 
   // Wave
-  fmt.Println("[ENGINE] Finished...\n");
+  log.Logln(1, "[ENGINE] Finished...\n");
 }
 
 func pathWalker(path string) {
@@ -66,14 +68,14 @@ func pathWalker(path string) {
     return nil;
   });
   Panic(err);
-  fmt.Println("[ENGINE] Found " + itoa(len(parsedFiles)) + " goo file(s)...");
+  log.Logln(2, "[ENGINE] Found " + itoa(len(parsedFiles)) + " goo file(s)...");
 
   // Create a channel, fill it, and then drain with reports from workers
   channel := make(chan int);
   tLines := 0;
 
   // Fill channel to begin processing
-  fmt.Println("[ENGINE] Dispatching " + itoa(len(parsedFiles)) + " rewrite workers...");
+  log.Logln(2, "[ENGINE] Dispatching " + itoa(len(parsedFiles)) + " rewrite workers...");
   for i:=0; i < len(parsedFiles); i++ {
     // Spin off concurrent tasks
     go walkWorker(parsedFiles[i], channel);
@@ -84,7 +86,7 @@ func pathWalker(path string) {
   }
 
   // Report reports
-  fmt.Printf("[ENGINE] Workers report scanning of %d lines...\n", tLines);
+  log.Logf(2, "[ENGINE] Workers report scanning of %d lines...\n", tLines);
 
 }
 
@@ -95,7 +97,7 @@ func walkWorker(path string, channel chan int){
   fileString, err := file.ReadFile(path);
   Panic(err);
   lines := str.Split(string(fileString), "\n");
-  fmt.Println("[SYNC] Worker - Scanning " + itoa(len(lines)) + " lines in: " + path);
+  log.Logln(3, "[SYNC] Worker - Scanning " + itoa(len(lines)) + " lines in: " + path);
 
   // Compile the engine command regex pattern
   ecRegex := regexp.MustCompile(` *\/\/ *\[GOOP\] *\[([A-Z]*)\] *(\[(([0-9]*)|([A-Z]*))\])?`);
@@ -103,7 +105,7 @@ func walkWorker(path string, channel chan int){
   wsRegex := regexp.MustCompile(`^( *)(.*)`);
 
   // Setup a list of transformFunctions to call
-  rewriteFunctions := [](func(string)string){
+  rewriteFunctions := [](func(string, logger.LevelLogger)string){
     rewriters.MethodRewriter,
     rewriters.WhileLoopRewriter,
     rewriters.ForLoopRewriter,
@@ -135,18 +137,18 @@ func walkWorker(path string, channel chan int){
       // Set engine parameters based on parsed command
       switch( command[0] ){
         case "START": {
-          fmt.Printf("[SYNC] Worker - Starting transpile engine on line %d...\n", i)
+          log.Logf(4, "[SYNC] Worker - Starting transpile engine on line %d...\n", i)
           processing = true;
         }
         case "STOP": {
-          fmt.Printf("[SYNC] Worker - Stopping transpile engine on line %d...\n", i)
+          log.Logf(4, "[SYNC] Worker - Stopping transpile engine on line %d...\n", i)
           processing = false;
         }
         case "SKIP": {
           // Get the int value of the command parameter
           count, err := atoi(command[1]);
           Panic(err);
-          fmt.Printf("[SYNC] Worker - Ignoring " + itoa(count) + " lines at %d...\n", i);
+          log.Logf(4, "[SYNC] Worker - Ignoring " + itoa(count) + " lines at %d...\n", i);
           // For each skip, include line in output and move to next line
           for l := 0; l < count; l++ {
             lineSet[i] = true;
@@ -160,7 +162,7 @@ func walkWorker(path string, channel chan int){
           if( err != nil ){
             if( command[1] == "START" ){
               deleting := true;
-              fmt.Printf("[SYNC] Worker - Deleting from line %d...\n", i);
+              log.Logf(4, "[SYNC] Worker - Deleting from line %d...\n", i);
               for deleting {
                 // While we are deleting lines, keep checking for STOP token
                 if( ecRegex.MatchString(lines[i]) ){
@@ -173,13 +175,13 @@ func walkWorker(path string, channel chan int){
                 // Point to next line
                 i++;
               }
-              fmt.Printf("[SYNC] Worker - Deleted to line %d...\n", i);
+              log.Logf(4, "[SYNC] Worker - Deleted to line %d...\n", i);
             } else {
               panic("Bad parameter passed to engine's DELETE function!")
             }
           } else {
             // If an int is provided, pass that many lines without validating
-            fmt.Printf("[SYNC] Worker - Deleting " + itoa(count) + " lines at %d...\n", i);
+            log.Logf(4, "[SYNC] Worker - Deleting " + itoa(count) + " lines at %d...\n", i);
             for l := 0; l < count; l++ {
               // Delete is automatic when no 'lineSet' token is generated
               // Point to next line
@@ -214,7 +216,7 @@ func walkWorker(path string, channel chan int){
               panic("Bad parameter passed to engine's COMMENT function!")
             }
           } else {
-            fmt.Printf("[SYNC] Worker - Commenting " + itoa(count) + " lines at %d...\n", i);
+            log.Logf(4, "[SYNC] Worker - Commenting " + itoa(count) + " lines at %d...\n", i);
             for l := 0; l < count; l++ {
               // Commenting requires rewriting the line and marking valid
               lineSet[i] = true;
@@ -224,7 +226,7 @@ func walkWorker(path string, channel chan int){
           }
         }
         default: {
-          fmt.Println("[SYNC] Worker - Unknown engine command: " + command[0])
+          log.Logln(4, "[SYNC] Worker - Unknown engine command: " + command[0])
         }
       }
       // Recycle the for loop, decrement i to avoid offset change on iteration
@@ -233,7 +235,7 @@ func walkWorker(path string, channel chan int){
     }
     if ( processing ) {
       for _, rewriter := range(rewriteFunctions) {
-        lines[i] = rewriter(lines[i]);
+        lines[i] = rewriter(lines[i], log);
       }
     }
   }
