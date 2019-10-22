@@ -43,7 +43,7 @@ func MethodRewriter(data string, log logger.LevelLogger) string {
 
     // Setup the needed container variables for transpiling definitions
     var returnType, className, methodName string;
-    var methodDef []string;
+    var methodDef string;
 
     // Method definition token, gather and invalidate
     token := tokens[cToken];
@@ -104,36 +104,30 @@ func MethodRewriter(data string, log logger.LevelLogger) string {
     }
 
     // Empty and rebuild method def
-    methodDef = []string{
-        "func",
-    };
+    methodDef = "func";
 
     if( len(className) > 0 ){
       // Format for object pointer/receiver
-      methodDef = append(methodDef, []string{
-        " (",
-        "this",
-        " *" + className,
-        ")",
-      }...)
+      methodDef += " (this *" + className + ")";
     }
     if( len(methodName) > 0 ){
-      methodDef = append(methodDef, " " + methodName);
+      methodDef += " " + methodName;
     } else {
       // Anonymous closure
     }
     // Add parenthesis to joined parameter set, add parameters to def
-    methodDef = append(methodDef, "(" + str.Join(parameters, " ") + ")")
+    methodDef += "(" + str.Join(parameters, " ") + ")";
     // Add return type if not void
-    if( returnType != "void" ) { methodDef = append(methodDef, " " + returnType + " "); }
+    if( returnType != "void" ) { methodDef += " " + returnType + " "; }
 
-    // If we need to open the function, do it now
-    methodDef = append(methodDef, "{");
-    if(!str.Contains(splitToken[1], "{")){
+    // We need to open the function, do it now
+    methodDef += "{";
+    // Then remove function opening in next token, if it exists
+    if( !str.Contains(splitToken[1], "{") ){
       tokens[cToken + 1] = foRegex.ReplaceAllString(tokens[cToken + 1], "")
     }
     // Write the new method definition to the previous slot and mark valid
-    tokens[cToken] = str.Join(methodDef, "");
+    tokens[cToken] = methodDef;
     tokenSet[cToken] = true;
 
     // Notify function was rewriten
