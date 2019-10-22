@@ -20,16 +20,16 @@ var MAX_LOGGING_LEVEL int = 5;
 var itoa = strUtil.Itoa
 var atoi = strUtil.Atoi
 var areEqual = reflect.DeepEqual
-func regexReplaceCleanSplit(re *regexp.Regexp, in string, pt string) []string{
+func regexReplaceCleanSplit(re *regexp.Regexp, in string, pt string) []string {
   return str.Split(str.TrimSpace(re.ReplaceAllString(in, pt)), " ");
 }
-func Panic(er error) {
+func Panic(er error){ 
   if( er != nil ) { panic(er); }
 }
 var log = logger.LevelLogger{ MAX_LOGGING_LEVEL };
 
 
-func main() {
+func main(){ 
   // Greet
   log.Logln(1, "\n[ENGINE] Starting...");
 
@@ -51,13 +51,13 @@ func main() {
   log.Logln(1, "[ENGINE] Finished...\n");
 }
 
-func pathWalker(path string) {
+func pathWalker(path string){ 
 
   // Setup an array for all the files that need processing
   var parsedFiles []string;
 
   // Walk the filepath and gather files
-  err := filepath.Walk(path, func(fname string, finfo os.FileInfo, err error) error  {
+  err := filepath.Walk(path, func(fname string, finfo os.FileInfo, err error) error { 
     // Error out on error (capture??)
     Panic(err);
     // Gather files with matching extensions

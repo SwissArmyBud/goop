@@ -7,7 +7,7 @@ import (
 
 var channelToken string = "<<";
 
-func ChannelTokenRewriter(data string, log logger.LevelLogger) string{
+func ChannelTokenRewriter(data string, log logger.LevelLogger) string {
 
   // Pattern match for channel token
   // (mandatory) <-

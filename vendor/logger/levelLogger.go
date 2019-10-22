@@ -8,7 +8,7 @@ type LevelLogger struct {
   Level int;
 }
 
-func (this *LevelLogger) GetLevel() int{ return this.Level; }
+func (this *LevelLogger) GetLevel() int { return this.Level; }
 func (this *LevelLogger) SetLevel( l int ){ this.Level = l; }
 func (this *LevelLogger) Log( l int, args ...interface{}){
   if( l <= this.Level ){

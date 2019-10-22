@@ -5,7 +5,7 @@ import (
   "logger"
 )
 
-func ForLoopRewriter(data string, log logger.LevelLogger) string{
+func ForLoopRewriter(data string, log logger.LevelLogger) string {
 
   // Pattern match for golang for loop
   // (mandatory) for(

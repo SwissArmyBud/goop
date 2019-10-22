@@ -8,7 +8,7 @@ import (
 
 var methodToken string = "::";
 
-func MethodRewriter(data string, log logger.LevelLogger) string{
+func MethodRewriter(data string, log logger.LevelLogger) string {
 
   // Pattern match for golang return type capturing:
   // (optional) map
@@ -31,7 +31,7 @@ func MethodRewriter(data string, log logger.LevelLogger) string{
   rtRegex := regexp.MustCompile(`((((map)?(\[.*?\]))?|(func\(.*?\))?\s?)?([A-Za-z][A-Za-z0-9]*)\ *)$`);
 
   // Pattern match for any number of whitespaces and a function opening
-  foRegex := regexp.MustCompile(`(\s*)\{`);
+  foRegex := regexp.MustCompile(`^ *\{`);
 
   // Grab all tokens, init containers and validity map
   tokens := str.Split(data, " ");
@@ -102,8 +102,6 @@ func MethodRewriter(data string, log logger.LevelLogger) string{
     if( len(parameters) > 0 ){
       parameters = append(parameters, splitToken[0]);
     }
-    // Leave function opening in current token
-    tokens[cToken] = splitToken[1];
 
     // Empty and rebuild method def
     methodDef = []string{
@@ -128,12 +126,14 @@ func MethodRewriter(data string, log logger.LevelLogger) string{
     methodDef = append(methodDef, "(" + str.Join(parameters, " ") + ")")
     // Add return type if not void
     if( returnType != "void" ) { methodDef = append(methodDef, " " + returnType + " "); }
-    // If we stored a shard in the current slot, add it to the new line
-    methodDef = append(methodDef, tokens[cToken])
-    // Use regex to replace extra whitespace groups before function opening
-    // bracket, write the new method definition to the previous
-    // slot and mark valid in token map
-    tokens[cToken] = foRegex.ReplaceAllString(str.Join(methodDef, ""), "{");
+
+    // If we need to open the function, do it now
+    methodDef = append(methodDef, "{");
+    if(!str.Contains(splitToken[1], "{")){
+      tokens[cToken + 1] = foRegex.ReplaceAllString(tokens[cToken + 1], "")
+    }
+    // Write the new method definition to the previous slot and mark valid
+    tokens[cToken] = str.Join(methodDef, "");
     tokenSet[cToken] = true;
 
     // Notify function was rewriten
