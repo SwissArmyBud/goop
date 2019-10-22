@@ -1,0 +1,31 @@
+package rewriters
+
+import (
+  "regexp"
+  "logger"
+)
+
+// [GOOP][DELETE][1]
+// This block allows Goop to process itself
+// [GOOP][SKIP][1]
+var anyKeywordToken string = "any";
+var newAnyKeyword string = "interface{}";
+
+string ::AnyTokenRewriter(data string, log logger.LevelLogger){
+
+  // Pattern match for keyword token
+  keywordRegex := regexp.MustCompile(`\b` + anyKeywordToken + `\b`);
+
+  if ( keywordRegex.MatchString(data) ){
+    // [GOOP][DELETE][1]
+    // This block allows Goop to process itself
+    // [GOOP][SKIP][1]
+    log.Logln(5, "[SYNC] Rewriter - Converting any token...");
+    // Use regex to replace keyword
+    data = keywordRegex.ReplaceAllString(data, newAnyKeyword);
+  }
+
+  // Return string to caller
+  return data;
+
+}

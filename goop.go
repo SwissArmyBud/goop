@@ -104,12 +104,13 @@ func walkWorker(path string, channel chan int){
   // Compile the whitespace regex pattern
   wsRegex := regexp.MustCompile(`^( *)(.*)`);
 
-  // Setup a list of transformFunctions to call
+  // Setup a list of transform functions to call
   rewriteFunctions := [](func(string, logger.LevelLogger)string){
     rewriters.MethodRewriter,
     rewriters.WhileLoopRewriter,
     rewriters.ForLoopRewriter,
     rewriters.ChannelTokenRewriter,
+    rewriters.AnyTokenRewriter,
   };
 
   // Engine processing state, and line validity map for tracking

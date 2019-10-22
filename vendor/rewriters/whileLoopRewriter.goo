@@ -4,18 +4,24 @@ import (
   "regexp"
   "logger"
 )
+// [GOOP][DELETE][1]
+// This block allows Goop to process itself
+// [GOOP][SKIP][1]
+var whileKeywordToken string = "while";
+var newWhileKeyword string = "for";
 
 string ::WhileLoopRewriter(data string, log logger.LevelLogger){
 
-  // Pattern match for golang while loop
-  // (mandatory) while
-  flRegex := regexp.MustCompile(`\bwhile\b`);
+  // Pattern match for keyword token
+  keywordRegex := regexp.MustCompile(`\b` + whileKeywordToken + `\b`);
 
-  if( flRegex.MatchString(data) ){
-    matches := flRegex.FindAllStringIndex(data, -1);
-    log.Logf(5, "[SYNC] Rewriter - Converting %d while loop(s)...\n", len(matches));
-    // Use regex to unwrap the parameter capture groups
-    data = flRegex.ReplaceAllString(data, "for")
+  if( keywordRegex.MatchString(data) ){
+    // [GOOP][DELETE][1]
+    // This block allows Goop to process itself
+    // [GOOP][SKIP][1]
+    log.Logln(5, "[SYNC] Rewriter - Converting while loop...");
+    // Use regex to replace keyword
+    data = keywordRegex.ReplaceAllString(data, newWhileKeyword);
   }
 
   // Return string to caller

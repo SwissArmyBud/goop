@@ -30,7 +30,7 @@ func MethodRewriter(data string, log logger.LevelLogger) string {
   // oktype) func(int, int) map[]func(int, int)void
   rtRegex := regexp.MustCompile(`((((map)?(\[.*?\]))?|(func\(.*?\))?\s?)?([A-Za-z][A-Za-z0-9]*)\ *)$`);
 
-  // Pattern match for any number of whitespaces and a function opening
+  // Pattern match for interface{} number of whitespaces and a function opening
   foRegex := regexp.MustCompile(`^ *\{`);
 
   // Grab all tokens, init containers and validity map

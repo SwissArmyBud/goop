@@ -4,18 +4,18 @@ import (
   "regexp"
   "logger"
 )
+var whileKeywordToken string = "while";
+var newWhileKeyword string = "for";
 
 func WhileLoopRewriter(data string, log logger.LevelLogger) string {
 
-  // Pattern match for golang for loop
-  // (mandatory) for
-  flRegex := regexp.MustCompile(`\bwhile\b`);
+  // Pattern match for keyword token
+  keywordRegex := regexp.MustCompile(`\b` + whileKeywordToken + `\b`);
 
-  if( flRegex.MatchString(data) ){
-    matches := flRegex.FindAllStringIndex(data, -1);
-    log.Logf(5, "[SYNC] Rewriter - Converting %d for loop(s)...\n", len(matches));
-    // Use regex to unwrap the parameter capture groups
-    data = flRegex.ReplaceAllString(data, "for")
+  if( keywordRegex.MatchString(data) ){
+    log.Logln(5, "[SYNC] Rewriter - Converting while loop...");
+    // Use regex to replace keyword
+    data = keywordRegex.ReplaceAllString(data, newWhileKeyword);
   }
 
   // Return string to caller

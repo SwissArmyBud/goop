@@ -18,8 +18,7 @@ func ForLoopRewriter(data string, log logger.LevelLogger) string {
 
   // If a "for" loop is matched, unwrap and pad one space on left/right
   if( flRegex.MatchString(data) ){
-    matches := flRegex.FindAllStringIndex(data, -1);
-    log.Logf(5, "[SYNC] Rewriter - Unwrapping %d for loop(s)...\n", len(matches));
+    log.Logln(5, "[SYNC] Rewriter - Unwrapping for loop...");
     // Use regex to unwrap the parameter capture groups
     data = flRegex.ReplaceAllString(data, "for $1 {");;
   }
