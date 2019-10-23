@@ -88,13 +88,15 @@ Golang forces programmers to use single-condition `for` loops to duplicate `whil
 ```
 // GOLANG
 let i := 0;
-for i++ < 5 {
+for i < 5 {
+  i += 2;
   fmt.Println(i);
 }
 
 // GOOP
 let i := 0;
-while (i++ < 5) {
+while (i < 5) {
+  i += 2;
   fmt.Println(i);
 }
 ```
@@ -188,7 +190,7 @@ newType Vertex::SomeFunc(){ return getFuncPtr(); }
  - The matching system to find `for` loops will match a `for` against the first opening bracket (`{`) it sees, which means function CALLS are legal syntax inside Goop `for` loops, but function BODIES are not.
 ```
  // ILLEGAL for Loop
- for( i:=0; i < ::(){ return 5; }(); i++) { fmt.Println(i); }
+ for( i:=0; i < int ::(){ return 5; }(); i++) { fmt.Println(i); }
 
  // Legal Goop Syntax - Function body outside loop parameters
  f := int ::(){ return 5; }
