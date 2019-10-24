@@ -10,7 +10,7 @@
 **Native Golang function transpiling from C++ style method declarations, and other simple syntax fixes.**
 
 ## Motivation
-Golang has made several unfortunate syntax choices, all of which slow down the migration of programmers into an otherwise useful language. Goop aims to fix all of Golang's shorcomings while staying low-profile and straightforward to use. This project is a simple transpiler engine that:
+Golang has made several unfortunate syntax choices, all of which slow down the migration of programmers into an otherwise useful language. Goop aims to fix all of Golang's shortcomings while staying low-profile and straightforward to use. This project is a simple transpiler engine that:
  - Enables the use of C++ style method declaration syntax
  - Converts C++ style `while` loops into Golang's single-condition `for` loops
  - Unwraps C++ style `for` loop parameterizations from parenthesis
